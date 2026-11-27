@@ -24,6 +24,19 @@ def init_database():
     if activities_collection.count_documents({}) == 0:
         for name, details in initial_activities.items():
             activities_collection.insert_one({"_id": name, **details})
+
+    activities_collection.update_one(
+        {"_id": "Manga Maniacs"},
+        {"$setOnInsert": initial_activities["Manga Maniacs"]},
+        upsert=True
+    )
+    activities_collection.update_one(
+        {
+            "_id": "Manga Maniacs",
+            "description": "Explore the fantastic stories of the most interesting characters from Japanese Manga (graphic novels)."
+        },
+        {"$set": {"description": initial_activities["Manga Maniacs"]["description"]}}
+    )
             
     # Initialize teacher accounts if empty
     if teachers_collection.count_documents({}) == 0:
@@ -32,6 +45,16 @@ def init_database():
 
 # Initial database if empty
 initial_activities = {
+    "Manga Maniacs": {
+        "description": "Dive into the vibrant worlds of Japanese manga! Discover unforgettable characters, epic adventures, and stories that leap off the page.",
+        "schedule": "Tuesdays at 7pm",
+        "schedule_details": {
+            "days": ["Tuesday"],
+            "start_time": "19:00"
+        },
+        "max_participants": 15,
+        "participants": []
+    },
     "Chess Club": {
         "description": "Learn strategies and compete in chess tournaments",
         "schedule": "Mondays and Fridays, 3:15 PM - 4:45 PM",
@@ -186,4 +209,3 @@ initial_teachers = [
         "role": "admin"
     }
 ]
-
